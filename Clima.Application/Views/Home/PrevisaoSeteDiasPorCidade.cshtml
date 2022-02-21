@@ -1,0 +1,56 @@
+﻿@using System.Globalization;
+@model List<Clima.Application.Models.PrevisaoClimaModel>
+
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title">@ViewBag.cidadesearch</h3>
+    </div>
+    <div class="box-body no-padding">
+        <table class="table table-condensed">
+            <tr>
+                <th>
+                    Data
+                </th>
+                <th>
+                    Clima
+                </th>
+
+                <th>
+                    Temperatura
+                </th>
+
+            </tr>
+            @{ var rowColor = "#E6E6E6"; }
+            @foreach (var item in Model)
+            {
+                <tr style="background-color:@rowColor;">
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DataPrevisao)                   
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Clima)
+                    </td>
+                    <td>
+                        Min @Html.DisplayFor(modelItem => item.TemperaturaMinima) ºC  &nbsp
+                        Max @Html.DisplayFor(modelItem => item.TemperaturaMaxima) ºC
+
+                    </td>
+
+                </tr>
+                if (@rowColor.Equals("#ffffff"))
+                {
+                    rowColor = "#E6E6E6";
+                }
+                else
+                {
+                    rowColor = "#ffffff";
+                }
+            }
+        </table>
+    </div>
+
+</div>
+
+
+

@@ -1,0 +1,102 @@
+﻿@model IEnumerable<Clima.Application.Models.PrevisaoClimaModel>
+
+@{
+    ViewBag.Title = "Home Page";
+}
+
+
+
+<h1>Clima tempo simples</h1>
+<br />
+<div class="form-inline">
+    <div id="ListCidadesFrias" class="form-group">
+        @Html.Partial("CidadesFrias", ((List<Clima.Application.Models.PrevisaoClimaModel>)ViewData["CidadesFrias"]))
+    </div>
+    &nbsp&nbsp
+    <div id="ListCidadesQuentes" class="form-group">
+        @Html.Partial("CidadesQuentes", ((List<Clima.Application.Models.PrevisaoClimaModel>)ViewData["CidadesQuentes"]))
+    </div>
+
+</div>
+
+<div class="form-inline">
+    <div class="form-group">
+        <label>Informe a Cidade</label><br />
+        @Html.TextBox("searchCidade", "", htmlAttributes: new { @class = "form-control", style = "Width: 250px" })       
+
+        @Html.TextBox("codCidade", "", htmlAttributes: new { @class = "form-control", style = "display: none" })
+
+    </div>
+    <div class="form-group">
+        <br />
+        <input type="submit" value="Buscar" name="submit" class="btn btn-primary" id="btnBuscar" />
+    </div>
+
+</div>
+<br />
+
+<div id="ListPrevisaoSeteDias">
+   @Html.Partial("PrevisaoSeteDiasPorCidade", ((List<Clima.Application.Models.PrevisaoClimaModel>)ViewData["PrevisaoSeteDiasPorCidade"]))
+</div>    
+
+
+<script src="~/Scripts/AutoComplete/jquery-1.10.0.min.js"></script>
+<script src="~/Scripts/AutoComplete/jquery-ui.min.js"></script>
+<link href="~/Content/jquery-ui.css" rel="stylesheet" />
+
+
+<script type="text/javascript">
+    $(function () {
+        $('input, textarea').on('keypress', function (e) {
+            if (e.keyCode == 13) {
+                e.preventDefault();
+                $("#btnBuscar").click();
+            }
+        });
+
+        $("#searchCidade").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '/Home/BuscarCidades/',
+                    data: "{ 'prefix': '" + request.term + "'}",
+                    dataType: "json",
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return item;
+                        }))
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+            },
+            select: function (e, i) {
+                $("#codCidade").val(i.item.val);
+            },
+            minLength: 1
+        });
+    });
+
+    $("#btnBuscar").click(function () {
+        searchPrevisao();
+    });
+
+    function searchPrevisao() {       
+        $.ajax({
+            url: "/Home/PrevisaoProximosSeteDiasGet?codCidade=" + $('#codCidade').val(),       
+            success: function (result) {
+                $('#ListPrevisaoSeteDias').html(result);
+            }
+        });
+    }
+
+
+
+
+
+</script>
